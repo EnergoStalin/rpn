@@ -4,7 +4,22 @@ add_cflags("-Wall", "-Werror", "-Wextra")
 set_languages("c11")
 
 add_toolchains("gcc")
+
 add_requires("check")
+
+rule("coverage")
+  on_load(function (target) 
+    if is_mode("coverage") then
+      target:add("links", "gcov")
+      target:add("rules", "mode.coverage")
+    end
+  end)
+  on_config(function (target) 
+    if is_mode("coverage") then
+      target:add("cxflags", unpack({"-fprofile-arcs", "-ftest-coverage"}))
+    end
+  end)
+rule_end()
 
 rule("report")
   after_run(function (target) 
@@ -14,6 +29,7 @@ rule("report")
       os.execv("genhtml", { "-o", path.join(target:targetdir(), "/report"), testinfo })
     end
   end)
+rule_end()
 
 target("rpn")
   set_default()
@@ -21,10 +37,7 @@ target("rpn")
   add_files("*.c")
   add_headerfiles("*.h")
 
-  if is_mode("coverage") then
-    add_cflags("--coverage", "-fprofile-arcs", "-ftest-coverage")
-    add_links("gcov")
-  end
+  add_rules("coverage")
 target_end()
 
 target("rpn-test")
