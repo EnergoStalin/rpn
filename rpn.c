@@ -1,25 +1,21 @@
 // See: https://en.wikipedia.org/wiki/Reverse_Polish_notation
 
-#include <math.h>
-#include <stdio.h>
-
-#ifndef PI
-#define PI 3.1415
-#endif
-
 #include "rpn.h"
 
-static double STACK[STACKSIZE];     // STACKSIZE defined in header file.
-static double *SP = &STACK[0] - 1;  // stack pointer - 1 char below so first
-                                    // push will happen in right location.
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-void printstack(void)  // for testing or while using @
-{
+static double STACK[STACKSIZE];  // STACKSIZE defined in header file.
+static double *SP = STACK;       // stack pointer - 1 char below so first
+                                 // push will happen in right location.
+
+void printstack(void) {  // for testing or while using @
   double *pc;
   pc = SP;
   printf("\n");
   printf("---------\n");
-  while (pc >= &STACK[0]) {
+  while (pc >= STACK) {
     printf("%f\n", *pc);
     pc--;
   }
@@ -28,23 +24,21 @@ void printstack(void)  // for testing or while using @
 
 void push(double x) {
   if (SP >= &STACK[STACKSIZE - 1]) {
-    printf("you have a stack overflow!\n");
+    fprintf(stderr, "you have a stack overflow!\n");
     exit(-1);
   }
-  ++SP;
-  *SP = x;
+  *(SP++) = x;
 }
 
 double pop(void) {
   double tmp;
 
   if (SP < &STACK[0]) {
-    printf("you have a stack underflow!\n");
+    fprintf(stderr, "you have a stack underflow!\n");
     exit(1);
   }
 
-  tmp = *SP;  // thing on top of stack
-  SP--;
+  tmp = *(SP--);  // thing on top of stack
   return tmp;
 }
 
@@ -132,7 +126,7 @@ enum error rpn(double *result, char *expr) {
   }
   *result = *SP;
 
-  SP = &STACK[0] - 1;  // reset stack
+  SP = STACK;  // reset stack
 
   return OK;
 }
