@@ -1,4 +1,4 @@
-includes("test/xmake.lua")
+includes("rules.lua", "test/xmake.lua")
 
 target("rpn")
   set_default()
