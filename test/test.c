@@ -14,6 +14,8 @@ START_TEST(rpn_1) {
 
   rpn(&result, "5 C");
   ck_assert_ldouble_eq_tol(result, 5, 1e-8);
+
+  rpn(&result, "5 T 3 t l L p !");
 }
 END_TEST
 
