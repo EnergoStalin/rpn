@@ -10,21 +10,9 @@ static double STACK[STACKSIZE];  // STACKSIZE defined in header file.
 static double *SP = STACK;       // stack pointer - 1 char below so first
                                  // push will happen in right location.
 
-void printstack(void) {  // for testing or while using @
-  double *pc;
-  pc = SP;
-  printf("\n");
-  printf("---------\n");
-  while (pc >= STACK) {
-    printf("%f\n", *pc);
-    pc--;
-  }
-  printf("---------\n");
-}
-
 void push(double x) {
   if (SP >= &STACK[STACKSIZE - 1]) {
-    fprintf(stderr, "you have a stack overflow!\n");
+    fprintf(stderr, "[RPN]: you have a stack overflow!\n");
     exit(-1);
   }
   *(SP++) = x;
@@ -34,7 +22,7 @@ double pop(void) {
   double tmp;
 
   if (SP < &STACK[0]) {
-    fprintf(stderr, "you have a stack underflow!\n");
+    fprintf(stderr, "[RPN]: you have a stack underflow!\n");
     exit(1);
   }
 
@@ -102,9 +90,7 @@ enum error rpn(double *result, char *expr) {
       else if (*pc == 'p')
         push(PI);
       else if (*pc == '#')
-        printf("Top of stack: %f\n", *SP);
-      else if (*pc == '@')
-        printstack();
+        printf("[RPN]: Top of stack: %f\n", *SP);
       else if (*pc == ']')  // switch order
         a = pop(), b = pop(), push(a), push(b);
       else if (*pc == 'x')
@@ -114,7 +100,7 @@ enum error rpn(double *result, char *expr) {
       else if (*pc == '\n' || *pc == ' ')
         ;
       else {
-        printf("Invalid character: '%c'\n", *pc);
+        printf("[RPN]: Invalid character: '%c'\n", *pc);
         exit(1);
       }
       /* //uncomment this part in order to see view stack each time (or use @).
